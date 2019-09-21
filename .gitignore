@@ -1,7 +1,7 @@
 .vscode
 .mypy_cache
 venv
-
+build/
 # Logs
 logs
 *.log
