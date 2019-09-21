@@ -17,3 +17,7 @@ poetry install
 python manage.py migrate  # optional, db is provided
 python manage.py runserver
 ```
+
+## Presentation
+
+Clone repository and run: `npm install && npm start`
