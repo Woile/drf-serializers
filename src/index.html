@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>DRF Serializers</title>
+
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/reveal.css" />
+    <link rel="stylesheet" href="css/theme/black.css" />
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/monokai.css" />
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.type = "text/css";
+      link.href = window.location.search.match(/print-pdf/gi)
+        ? "css/print/pdf.css"
+        : "css/print/paper.css";
+      document.getElementsByTagName("head")[0].appendChild(link);
+    </script>
+    <style type="text/css">
+      .text-red {
+        color: red;
+      }
+
+      .text-green {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>
+            OpenAPI and DRF Serializers
+          </h2>
+        </section>
+        <section>
+          <section>
+            <h2>
+              OpenAPI
+            </h2>
+            <p class="fragment">
+              Describes a
+              <a href="https://restfulapi.net/">
+                <span class="text-red">
+                  RESTful
+                </span>
+              </a>
+              API
+            </p>
+          </section>
+          <section data-markdown>
+            <textarea data-template>
+              ```yaml
+              openapi: 3.0.2
+info:
+  title: Customers
+  version: 0.1.0
+  description: API for customers
+paths:
+  /customers/:
+    get:
+      operationId: listUsers
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    username:
+                      type: string
+                      description: Required. 150 characters or fewer. Letters, digits
+                        and @/./+/-/_ only.
+                      pattern: ^[\w.@+-]+$
+                      maxLength: 150
+                    email:
+                      type: string
+                      format: email
+                      maxLength: 254
+                    first_name:
+                      type: string
+                      maxLength: 30
+                    last_name:
+                      type: string
+                      maxLength: 150
+                  required:
+                  - username
+          description: ''
+    post:
+      operationId: createUser
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+                  description: Required. 150 characters or fewer. Letters, digits
+                    and @/./+/-/_ only.
+                  pattern: ^[\w.@+-]+$
+                  maxLength: 150
+                email:
+                  type: string
+                  format: email
+                  maxLength: 254
+                first_name:
+                  type: string
+                  maxLength: 30
+                last_name:
+                  type: string
+                  maxLength: 150
+              required:
+              - username
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  username:
+                    type: string
+                    description: Required. 150 characters or fewer. Letters, digits
+                      and @/./+/-/_ only.
+                    pattern: ^[\w.@+-]+$
+                    maxLength: 150
+                  email:
+                    type: string
+                    format: email
+                    maxLength: 254
+                  first_name:
+                    type: string
+                    maxLength: 30
+                  last_name:
+                    type: string
+                    maxLength: 150
+                required:
+                - username
+          description: ''
+  /customers/{id}/:
+    get:
+      operationId: retrieveUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  username:
+                    type: string
+                    description: Required. 150 characters or fewer. Letters, digits
+                      and @/./+/-/_ only.
+                    pattern: ^[\w.@+-]+$
+                    maxLength: 150
+                  email:
+                    type: string
+                    format: email
+                    maxLength: 254
+                  first_name:
+                    type: string
+                    maxLength: 30
+                  last_name:
+                    type: string
+                    maxLength: 150
+                required:
+                - username
+          description: ''
+    put:
+      operationId: updateUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+                  description: Required. 150 characters or fewer. Letters, digits
+                    and @/./+/-/_ only.
+                  pattern: ^[\w.@+-]+$
+                  maxLength: 150
+                email:
+                  type: string
+                  format: email
+                  maxLength: 254
+                first_name:
+                  type: string
+                  maxLength: 30
+                last_name:
+                  type: string
+                  maxLength: 150
+              required:
+              - username
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  username:
+                    type: string
+                    description: Required. 150 characters or fewer. Letters, digits
+                      and @/./+/-/_ only.
+                    pattern: ^[\w.@+-]+$
+                    maxLength: 150
+                  email:
+                    type: string
+                    format: email
+                    maxLength: 254
+                  first_name:
+                    type: string
+                    maxLength: 30
+                  last_name:
+                    type: string
+                    maxLength: 150
+                required:
+                - username
+          description: ''
+    patch:
+      operationId: partial_updateUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+                  description: Required. 150 characters or fewer. Letters, digits
+                    and @/./+/-/_ only.
+                  pattern: ^[\w.@+-]+$
+                  maxLength: 150
+                email:
+                  type: string
+                  format: email
+                  maxLength: 254
+                first_name:
+                  type: string
+                  maxLength: 30
+                last_name:
+                  type: string
+                  maxLength: 150
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  username:
+                    type: string
+                    description: Required. 150 characters or fewer. Letters, digits
+                      and @/./+/-/_ only.
+                    pattern: ^[\w.@+-]+$
+                    maxLength: 150
+                  email:
+                    type: string
+                    format: email
+                    maxLength: 254
+                  first_name:
+                    type: string
+                    maxLength: 30
+                  last_name:
+                    type: string
+                    maxLength: 150
+                required:
+                - username
+          description: ''
+    delete:
+      operationId: destroyUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+              ```
+            </textarea>
+          </section>
+        </section>
+        <section>
+          <h2>Why it matters?</h2>
+          <ul>
+            <li class="fragment">
+              Autogenerate client (see
+              <a href="https://github.com/encode/apistar">apistar</a>)
+            </li>
+            <li class="fragment">
+              Automatic documentation (supports
+              <a href="https://github.com/starlightknight/swagger-confluence"
+                >confluence)</a
+              >
+            </li>
+            <li class="fragment">Language agnostic</li>
+            <li class="fragment">Mock API servers</li>
+            <li class="fragment">
+              Automated tests for your API (see
+              <a href="https://www.soapui.org">soapui</a>)
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h4>How are serializers related to openAPI?</h4>
+          <p><img width="300" src="./what.webp" alt="what" /></p>
+        </section>
+        <section>
+          <p>
+            Most of DRF elements (serializers, filters, responses)
+          </p>
+          <p>
+            map directly to a part of a REST API
+          </p>
+        </section>
+        <section>
+          <p>
+            Serializers map directly to the HTTP BODY
+          </p>
+          <p class="fragment">
+            (THE PAYLOAD)
+          </p>
+          <img width="700" src="./http_request.png" alt="http request" />
+        </section>
+        <section>
+          <section>
+            What are they for?
+          </section>
+          <section data-markdown>
+            <textarea data-template>
+              #### serialize
+
+              orm -> python native datatypes
+
+              used to retrieve data
+
+              ```python
+              u = User.objects.latest("id")
+              s = CustomerSerializer(data=u)
+              s = CustomerSerializer(instance=u)
+              s.data
+              {'id': 3, 'username': 'santi', 'email': 'qwe@qwe.com', 'first_name': 'Santi', 'last_name': 'fra'}
+              ```
+              <aside class="notes">
+                This doesn't require a validation and is performed automatically by DRF
+              </aside>
+            </textarea>
+          </section>
+          <section data-markdown>
+            <textarea data-template>
+              #### deserialize
+
+              python's native datatypes -> orm (after first validating the incoming data)
+
+              ```python
+              >> data = {'username': 'jon', 'email': 'jon@qwe.com'}
+              >> s = CustomerSerializer(data=data)
+              >> s.is_valid()
+              True
+              >> s.save()
+              <User: jon>
+              ```
+            </textarea>
+          </section>
+        </section>
+        <section>
+          <section>
+            Do's and Don'ts of serializers
+          </section>
+          <section>
+            <h5>Do's</h5>
+            <ul style="list-style: none;">
+
+              <li><span class="text-green">✔</span> Validate input data</li>
+              <li><span class="text-green">✔</span> Clean input data</li>
+              <li><span class="text-green">✔</span> Deserialize (sometimes)</li>
+            </ul>
+          </section>
+          <section>
+            <h5>Don'ts</h5>
+            <ul style="list-style: none;">
+              <li>❌ Querystrings</li>
+              <li>❌ Headers</li>
+              <li>❌ Pagination</li>
+              <li>❌ input/output serializers</li>
+            </ul>
+          </section>
+        </section>
+        <section>
+          Do we need output serializer? Does it have an impact on performance?
+          <aside class="notes">
+            No we don't, because you don't validate your own data
+          </aside>
+        </section>
+        <section>
+          APIView vs ViewSet -- DEMO TIME
+          <p><img width="300" src="./itcrowd.gif" alt="on_fire" /></p>
+        </section>
+        <section>
+          Some stats:
+          <p class="fragment">
+            APIView: 278
+          </p>
+          <p class="fragment">
+            ModelViewSet: 17
+          </p>
+        </section>
+        <section>
+          <section>
+            How to deal with querystrings?
+            <p class="fragment">
+              <a href="https://django-filter.readthedocs.io/en/master/">
+                Django filter
+              </a>
+            </p>
+          </section>
+          <section>
+            <ol>
+              <li>Similar to serializers (declarative)</li>
+              <li>Can raise 400 if needed</li>
+              <li>Creates OpenAPI representation</li>
+            </ol>
+          </section>
+          <section data-markdown>
+            <textarea data-template>
+                ```python
+                from django_filters import rest_framework as filters
+                from django.contrib.auth.models import User
+
+
+                class CustomerFilter(filters.FilterSet):
+                    email__contains = filters.CharFilter(
+                      field_name="email", lookup_expr='icontains'
+                    )
+
+                    class Meta:
+                        model = User
+                        fields = ['first_name', 'email', 'email__contains']
+
+                class CustomerViewSet(viewsets.ModelViewSet):
+                    ...
+                    filterset_class = CustomerFilter
+                ```
+              </textarea
+            >
+          </section>
+        </section>
+        <section>
+          <section>
+            <h4>
+              Dealing with sensitive information in querystrings
+            </h4>
+            <p class="fragment">use HEADERS</p>
+          </section>
+          <section data-markdown>
+            <textarea data-template>
+
+            #### Idea from Pavel Perestoronin
+
+            ```python
+            query_params_via_headers([
+              ('HTTP_X_KRN', 'krn'),
+              ('HTTP_X_OMNITURE_ID', 'omniture_id'),
+            ])
+            def list(self, request, *args, **kwargs):
+              return super().list(request, *args, **kwargs)
+            ```
+
+            querystring are optional, they still appear in the interactive docs
+            making them still usable.
+            </textarea>
+          </section>
+        </section>
+      </div>
+    </div>
+
+    <script src="js/reveal.js"></script>
+
+    <script>
+      Reveal.registerPlugin("myPlugin", {
+        init: () => {
+          return new Promise(resolve => setTimeout(resolve, 3000));
+        }
+      });
+      Reveal.addEventListener("ready", () =>
+        console.log("Three seconds later...")
+      );
+      Reveal.initialize({
+        dependencies: [
+          { src: "plugin/markdown/marked.js" },
+          { src: "plugin/markdown/markdown.js" },
+          { src: "plugin/notes/notes.js", async: true },
+          {
+            src: "plugin/highlight/highlight.js",
+            async: true,
+            callback: function() {
+              hljs.initHighlightingOnLoad();
+            }
+          }
+        ],
+        markdown: {
+          smartypants: true
+        },
+        history: true
+      });
+    </script>
+  </body>
+</html>
