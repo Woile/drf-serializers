@@ -10,4 +10,8 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class OutputCustomerSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
     username = serializers.CharField()
+    email = serializers.CharField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()

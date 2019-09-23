@@ -2,7 +2,11 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework import routers
 from customers.viewsets import CustomerViewSet
-from customers.views import CustomerListCreateApiView, CustomerRetrieveUpdateApiView
+from customers.views import (
+    CustomerListCreateApiView,
+    CustomerRetrieveUpdateApiView,
+    CustomerListOutputApiView,
+)
 from rest_framework.schemas import get_schema_view
 from django.views.generic import TemplateView
 
@@ -12,6 +16,10 @@ router.register(r"customers", CustomerViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("clients/", CustomerListCreateApiView.as_view()),
+    path("clients/<int:pk>/", CustomerRetrieveUpdateApiView.as_view()),
+    path("clients-output/", CustomerListOutputApiView.as_view()),
+
     path(
         "openapi",
         get_schema_view(
@@ -19,8 +27,6 @@ urlpatterns = [
         ),
         name="openapi-schema",
     ),
-    path("clients/", CustomerListCreateApiView.as_view()),
-    path("clients/<int:pk>/", CustomerRetrieveUpdateApiView.as_view()),
     path(
         "docs/",
         TemplateView.as_view(

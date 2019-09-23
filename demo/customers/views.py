@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import views, status, generics
-from .serializers import CustomerSerializer
+from .serializers import CustomerSerializer, OutputCustomerSerializer
 from rest_framework.response import Response
 
 
@@ -48,3 +48,20 @@ class CustomerRetrieveUpdateApiView(views.APIView):
         # no prefetch_related cache invalidation which DRF does
 
         return Response(serializer.data)
+
+
+class CustomerListOutputApiView(views.APIView):
+    input_serializer_class = CustomerSerializer
+    output_serializer_class = OutputCustomerSerializer
+
+    def get(self, request, *args, **kwargs):
+        # List of customers
+        queryset = User.objects.all()
+
+        # NOTE: NO VALIDATION HERE. IT'S NOT NECESSARY
+        serializer_in = self.input_serializer_class(queryset, many=True)
+        data = serializer_in.data
+        serializer_out = self.output_serializer_class(data=data, many=True)
+        # import ipdb; ipdb.set_trace()
+        serializer_out.is_valid(raise_exception=True)
+        return Response(serializer_out.validated_data)
